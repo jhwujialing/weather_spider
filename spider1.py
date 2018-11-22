@@ -46,14 +46,24 @@ def spider1():
 	number1_b = result_1.find("},")
 	number1_c = result_1.find("u'airIndexLevel': {")
 	result_1_f = result_1[number1_b+2:number1_c-2]
-	result_1_h = result_1_f.split(',')
-	
+	result_1_i = result[:number1_a]
+	number1_d = result_1_i.rfind("u'avgHour1O3'")
+	number1_f = result_1_i.rfind("u'avgHour24SliderPm25'")
+	result_1_j = result_1_i[number1_d:number1_f-1]
+	result_1_k = result_1_j+result_1_f
+	result_1_h = result_1_k.split(',')
+
 
 	number2_a = result.find("u'\u632f\u4e1c\u65b0\u516d\u4e2d\u7ad9'") #振东新六中站
 	result_2 =result[number2_a:]
 	number2_b = result_2.find("},")
 	number2_c = result_2.find("u'airIndexLevel': {")
 	result_2_f = result_2[number2_b+2:number2_c-2]
+	result_2_i = result[:number2_a]
+	number2_d = result_2_i.rfind("u'avgHour1O3'")
+	number2_f = result_2_i.rfind("u'avgHour24SliderPm25'")
+	result_2_j = result_2_i[number2_d:number2_f-1]
+	result_2_k = result_2_j+result_2_f
 	result_2_h = result_2_f.split(',')
 
 	number3_a = result.find("u'\u679c\u56ed\u6865\u6c34\u5382'") #果园桥水厂
@@ -61,10 +71,14 @@ def spider1():
 	number3_b = result_3.find("},")
 	number3_c = result_3.find("u'airIndexLevel': {")
 	result_3_f = result_3[number3_b+2:number3_c-2]
+	result_3_i = result[:number3_a]
+	number3_d = result_3_i.rfind("u'avgHour1O3'")
+	number3_f = result_3_i.rfind("u'avgHour24SliderPm25'")
+	result_3_j = result_3_i[number3_d:number3_f-1]
+	result_3_k = result_3_j+result_3_f
 	result_3_h = result_3_f.split(',')
 	
 	result_total = [{'name':'乌镇','value':result_1_h},{'name':'振东新六中站','value':result_2_h},{'name':'果园桥水厂','value':result_3_h}]
-	print resp
 	return result_total
 for kk in range(9999999):
 	module_path = '/usr/txjson/'
