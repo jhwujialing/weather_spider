@@ -9,6 +9,8 @@ import time
 import json
 from pyamf import remoting  
 from pyamf.flex import messaging
+import logging
+import logging.handlers
 def spider1():
 	msg = messaging.RemotingMessage(
 	messageId=str(uuid.uuid1()).upper(),  
@@ -36,7 +38,7 @@ def spider1():
 	req = urllib2.Request(url, data, headers={'Content-Type': 'application/x-amf'})  
 	# 解析返回数据  
 	opener = urllib2.build_opener()  
-
+	
 	# 解码AMF协议返回的数据  
 	resp = remoting.decode(opener.open(req).read())
 	result = str(resp.bodies)
@@ -64,7 +66,7 @@ def spider1():
 	number2_f = result_2_i.rfind("u'avgHour24SliderPm25'")
 	result_2_j = result_2_i[number2_d:number2_f-1]
 	result_2_k = result_2_j+result_2_f
-	result_2_h = result_2_f.split(',')
+	result_2_h = result_2_k.split(',')
 
 	number3_a = result.find("u'\u679c\u56ed\u6865\u6c34\u5382'") #果园桥水厂
 	result_3 =result[number3_a:]
@@ -76,17 +78,43 @@ def spider1():
 	number3_f = result_3_i.rfind("u'avgHour24SliderPm25'")
 	result_3_j = result_3_i[number3_d:number3_f-1]
 	result_3_k = result_3_j+result_3_f
-	result_3_h = result_3_f.split(',')
+	result_3_h = result_3_k.split(',')
 	
 	result_total = [{'name':'乌镇','value':result_1_h},{'name':'振东新六中站','value':result_2_h},{'name':'果园桥水厂','value':result_3_h}]
 	return result_total
 for kk in range(9999999):
 	module_path = '/usr/txjson/'
 	#module_path = 'F:/tongxiang_spider/'
-	json_url = module_path+'json_aqi.json'
-	text1 = open(json_url,'w')
-	result_total = spider1()
+	LOG_FILE = module_path+'/spider1.log'
+	handler = logging.handlers.RotatingFileHandler(LOG_FILE, maxBytes = 1024*1024, backupCount = 5) # 实例化handler 
+	fmt = '%(asctime)s - %(filename)s:%(lineno)s - %(name)s - %(message)s' 
+	formatter = logging.Formatter(fmt)   # 实例化formatter
+	handler.setFormatter(formatter)      # 为handler添加formatter
+	logger = logging.getLogger('logging')
+	logger.addHandler(handler)
+	logger.setLevel(logging.INFO)
+	json_url1 = module_path+'json_aqi1.json'
+	text1 = open(json_url1,'w')
+	try:
+		result_total = spider1()
+		logger.info('spider1没错 成功')
+	except:
+		logger.error('spider1有错 失败',exc_info=1)
 	data_json = json.dumps(result_total,ensure_ascii=False)
 	text1.write(data_json)
 	text1.close()
+	
+	json_url1 = open(module_path+'/json_aqi1.json','r')
+	lines_url = ''
+	try:
+		lines_url = json_url1.read().splitlines()
+	except:
+		logger.error('读取 失败',exc_info=1)
+	json_url1.close()
+	if lines_url:
+		json_url = open(module_path+'/json_aqi.json','w')
+		for eachline in lines_url:
+			json_url.write(eachline)
+			json_url.write('\n')
+		json_url.close()
 	time.sleep(900)
