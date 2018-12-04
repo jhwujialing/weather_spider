@@ -5,10 +5,14 @@
 import urllib2  
 import uuid  
 import pyamf  
+import time
 import json
 from pyamf import remoting  
 from pyamf.flex import messaging  
-for kk in range(9999999):
+import logging
+import logging.handlers
+
+def this_is_spider(module_path):
 	msg = messaging.RemotingMessage(messageId=str(uuid.uuid1()).upper(),  
 		clientId=str(uuid.uuid1()).upper(),  
 		operation='getAllShowHourData',
@@ -116,14 +120,40 @@ for kk in range(9999999):
 	number9_d = result_9_f.find(']')
 	result_9_g = result_9_f[number9_c+1:number9_d]
 	result_9_h = result_9_g.split(',')
-	result_total = [{'name':'诸家','value':result_1_h},{'name':'南星桥港','value':result_2_h},{'name':'大麻','value':result_3_h},{'name':'联合桥','value':result_4_h},{'name':'晚村','value':result_5_h},{'name':'乌镇','value':result_6_h},{'name':'乌镇北','value':result_7_h},{'name':'新塍大通','value':result_8_h},{'name':'杭申公路桥','value':result_9_h}]
-
-
-	module_path = '/usr/txjson/'
-	#module_path = 'F:/tongxiang_spider/'
-	json_url = module_path+'json_szsj.json'
-	text1 = open(json_url,'w')
+	result_total = [{'name':'南星桥港','value':result_2_h},{'name':'大麻','value':result_3_h},{'name':'联合桥','value':result_4_h},{'name':'晚村','value':result_5_h},{'name':'乌镇','value':result_6_h},{'name':'乌镇北','value':result_7_h},{'name':'新塍大通','value':result_8_h},{'name':'杭申公路桥','value':result_9_h}]
+	json_url1 = module_path+'json_szsj1.json'
+	text1 = open(json_url1,'w')
 	data_json = json.dumps(result_total,ensure_ascii=False)
 	text1.write(data_json)
 	text1.close()
-	time.sleep(21570)
+	
+for kk in range(9999999):
+	module_path = '/usr/txjson/'
+	#module_path = 'F:/tongxiang_spider/'
+	LOG_FILE = module_path+'/spider.log'
+	handler = logging.handlers.RotatingFileHandler(LOG_FILE, maxBytes = 1024*1024, backupCount = 5) # 实例化handler 
+	fmt = '%(asctime)s - %(filename)s:%(lineno)s - %(name)s - %(message)s' 
+	formatter = logging.Formatter(fmt)   # 实例化formatter
+	handler.setFormatter(formatter)      # 为handler添加formatter
+	logger = logging.getLogger('logging')
+	logger.addHandler(handler)
+	logger.setLevel(logging.INFO)
+	try:
+		this_is_spider(module_path)
+		logger.info('spider没错 成功')
+	except:
+		logger.error('spider有错 失败',exc_info=1)
+	json_url2 = open(module_path+'/json_szsj1.json','r')
+	lines_url = ''
+	try:
+		lines_url = json_url2.read().splitlines()
+	except:
+		logger.error('读取 失败',exc_info=1)
+	json_url2.close()
+	if lines_url:
+		json_url = open(module_path+'/json_szsj.json','w')
+		for eachline in lines_url:
+			json_url.write(eachline)
+			json_url.write('\n')
+		json_url.close()
+	time.sleep(7200)
