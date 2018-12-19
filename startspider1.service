@@ -1,0 +1,11 @@
+[Unit]
+Description=Dummy Service
+After=multi-user.target network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python /usr/txjson/spider1.py
+StandardInput=tty-force
+
+[Install]
+WantedBy=multi-user.target network.target
